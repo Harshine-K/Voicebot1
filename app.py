@@ -32,7 +32,7 @@ def transcribe(audio_file, api_key):
 
         data = json.loads(json_file)
         question = data['results']['channels'][0]['alternatives'][0]['transcript']
-        generate_response_with_llm(question, api_key)
+        generate_response_with_llm(question)
 
     except Exception as e:
         print(f"Exception: {e}")
@@ -57,23 +57,23 @@ def text_to_speech(text, api_key, output_file):
         print(f"Exception: {e}")
 
 # Function to generate a response with LLM
-def generate_response_with_llm(query, api_key):
+def generate_response_with_llm(query):
     try:
         prompt_s = "Answer the question"
         prompt_e = f"\n\nQuestion: {query}\nAnswer:"
         full_prompt = prompt_s + prompt_e
 
         # Configure the LLM
-        genai.configure(api_key="AIzaSyD5bAMQtc4AdjMu17qLk2uoesl35p2-QoU")
+        genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
         llm_model = genai.GenerativeModel('gemini-1.5-flash')
         response = llm_model.generate_content(full_prompt)
-        text_to_speech(response.text, api_key, 'outputspeech.wav')
+        text_to_speech(response.text, os.getenv("DEEPGRAM_API_KEY"), 'outputspeech.wav')
 
     except Exception as e:
         print(f"Exception: {e}")
 
 # Main execution logic
 if __name__ == "__main__":
-    audio_file = 'output.wav'
-    api_key = "b70621f540af91d45e0722ae36aaa50938d296df"
-    transcribe(audio_file, api_key)
+    audio_file = 'output.wav'  # Input audio file
+    deepgram_api_key = os.getenv("DEEPGRAM_API_KEY")  # Deepgram API key
+    transcribe(audio_file, deepgram_api_key)
