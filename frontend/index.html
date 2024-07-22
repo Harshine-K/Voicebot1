@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Upload</title>
+</head>
+<body>
+    <h1>Upload Audio File</h1>
+    <form id="uploadForm" enctype="multipart/form-data">
+        <input type="file" name="audio" accept="audio/*" required>
+        <button type="submit">Upload and Process</button>
+    </form>
+
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const formData = new FormData(this);
+            const response = await fetch('/api/app', {
+                method: 'POST',
+                body: formData
+            });
+
+            // Check if response is OK
+            if (response.ok) {
+                // Create a URL for the generated audio file
+                const url = window.URL.createObjectURL(await response.blob());
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'outputspeech.wav';
+                a.click();
+            } else {
+                console.error('Failed to process the audio file.');
+            }
+        });
+    </script>
+</body>
+</html>
